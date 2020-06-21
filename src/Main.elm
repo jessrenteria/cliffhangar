@@ -108,39 +108,39 @@ subscriptions _ =
 -- VIEW
 
 
-black : Color
+black : Element.Color
 black =
-    rgb255 10 10 10
+    Element.rgb255 10 10 10
 
 
-white : Color
+white : Element.Color
 white =
-    rgb255 225 225 225
+    Element.rgb255 225 225 225
 
 
-blue : Color
+blue : Element.Color
 blue =
-    rgb255 21 101 192
+    Element.rgb255 21 101 192
 
 
-gradientArray : Array Color
+gradientArray : Array Element.Color
 gradientArray =
     Array.fromList
-        [ rgba255 0 299 0 0.5
-        , rgba255 48 299 0 0.5
-        , rgba255 96 230 0 0.5
-        , rgba255 144 231 0 0.5
-        , rgba255 193 231 0 0.5
-        , rgba255 232 222 0 0.5
-        , rgba255 233 174 0 0.5
-        , rgba255 233 174 0 0.5
-        , rgba255 233 126 0 0.5
-        , rgba255 234 78 0 0.5
-        , rgba255 235 30 0 0.5
+        [ Element.rgba255 0 299 0 0.5
+        , Element.rgba255 48 299 0 0.5
+        , Element.rgba255 96 230 0 0.5
+        , Element.rgba255 144 231 0 0.5
+        , Element.rgba255 193 231 0 0.5
+        , Element.rgba255 232 222 0 0.5
+        , Element.rgba255 233 174 0 0.5
+        , Element.rgba255 233 174 0 0.5
+        , Element.rgba255 233 126 0 0.5
+        , Element.rgba255 234 78 0 0.5
+        , Element.rgba255 235 30 0 0.5
         ]
 
 
-gradient : Float -> Maybe Color
+gradient : Float -> Maybe Element.Color
 gradient value =
     let
         clampedValue =
@@ -170,7 +170,7 @@ viewFailed : Browser.Document msg
 viewFailed =
     { title = "CliffHangar"
     , body =
-        [ layout
+        [ Element.layout
             [ Background.color black
             , Font.family
                 [ Font.external
@@ -181,14 +181,14 @@ viewFailed =
                 ]
             , Font.color white
             , Font.center
-            , padding 10
-            , spacing 7
+            , Element.padding 10
+            , Element.spacing 7
             ]
           <|
-            column []
+            Element.column []
                 [ Element.text "Whoops, something went wrong..."
                 , Element.text "Try visiting the official Hangar 18 website:"
-                , link []
+                , Element.link []
                     { url = "https://www.climbhangar18.com"
                     , label = Element.text "Hangar 18 official website"
                     }
@@ -201,7 +201,7 @@ viewLoading : Browser.Document msg
 viewLoading =
     { title = "CliffHangar"
     , body =
-        [ layout
+        [ Element.layout
             [ Background.color black
             , Font.family
                 [ Font.external
@@ -212,8 +212,8 @@ viewLoading =
                 ]
             , Font.color white
             , Font.center
-            , padding 10
-            , spacing 7
+            , Element.padding 10
+            , Element.spacing 7
             ]
           <|
             Element.text "Scraping https://www.climbhangar18.com, please wait..."
@@ -225,7 +225,7 @@ viewLoaded : Dict String GymInfo -> Browser.Document msg
 viewLoaded gymInfoDict =
     { title = "CliffHangar"
     , body =
-        [ layout
+        [ Element.layout
             [ Background.color black
             , Font.family
                 [ Font.external
@@ -254,17 +254,17 @@ borderWidth =
 
 viewGymInfoDict : Dict String GymInfo -> Element msg
 viewGymInfoDict gymInfoDict =
-    column [ Element.width Element.fill, height Element.fill ]
+    Element.column [ Element.width Element.fill, Element.height Element.fill ]
         (Element.row
             [ Element.width Element.fill
-            , height Element.fill
+            , Element.height Element.fill
             , Background.color blue
             , Border.color white
             , Border.widthEach { borderWidth | bottom = 2 }
             ]
-            [ el [ Element.width Element.fill ] <| Element.text "Gym"
-            , el [ Element.width Element.fill ] <| Element.text "Occupancy"
-            , el [ Element.width Element.fill ] <| Element.text "Capacity"
+            [ Element.el [ Element.width Element.fill ] <| Element.text "Gym"
+            , Element.el [ Element.width Element.fill ] <| Element.text "Occupancy"
+            , Element.el [ Element.width Element.fill ] <| Element.text "Capacity"
             ]
             :: List.map viewGymInfoEntry (Dict.toList gymInfoDict)
         )
@@ -276,34 +276,34 @@ viewGymInfoEntry ( name, info ) =
         Nothing ->
             Element.row
                 [ Element.width Element.fill
-                , height Element.fill
+                , Element.height Element.fill
                 , Border.color white
                 , Border.widthEach { borderWidth | bottom = 2 }
                 ]
-                [ el [ Element.width Element.fill ] <| Element.text name
-                , el [ Element.width Element.fill ] <| Element.text <| String.fromInt info.occupancy
-                , el [ Element.width Element.fill ] <| Element.text <| String.fromInt info.capacity
+                [ Element.el [ Element.width Element.fill ] <| Element.text name
+                , Element.el [ Element.width Element.fill ] <| Element.text <| String.fromInt info.occupancy
+                , Element.el [ Element.width Element.fill ] <| Element.text <| String.fromInt info.capacity
                 ]
 
         Just gradientColor ->
             Element.row
                 [ Element.width Element.fill
-                , height Element.fill
+                , Element.height Element.fill
                 , Border.color white
                 , Border.widthEach { borderWidth | bottom = 2 }
                 ]
-                [ el [ Element.width Element.fill ] <| Element.text name
-                , el
-                    [ height Element.fill
+                [ Element.el [ Element.width Element.fill ] <| Element.text name
+                , Element.el
+                    [ Element.height Element.fill
                     , Element.width Element.fill
                     , Background.color gradientColor
                     , Font.glow black 1
                     ]
                   <|
-                    el [ Element.width Element.fill, Element.centerY ] <|
+                    Element.el [ Element.width Element.fill, Element.centerY ] <|
                         Element.text <|
                             String.fromInt info.occupancy
-                , el [ Element.width Element.fill ] <| Element.text <| String.fromInt info.capacity
+                , Element.el [ Element.width Element.fill ] <| Element.text <| String.fromInt info.capacity
                 ]
 
 
