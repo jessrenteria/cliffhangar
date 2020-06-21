@@ -3,11 +3,10 @@ module Main exposing (Model, Msg(..), init, main, subscriptions, update, view)
 import Array exposing (Array)
 import Browser
 import Dict exposing (Dict)
-import Element exposing (..)
+import Element exposing (Element)
 import Element.Background as Background
 import Element.Border as Border
 import Element.Font as Font
-import Element.Input as Input
 import Http
 import Parser exposing ((|.), (|=), Parser)
 
@@ -80,7 +79,7 @@ type Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
+update msg _ =
     case msg of
         NewFetch result ->
             case result of
@@ -187,11 +186,11 @@ viewFailed =
             ]
           <|
             column []
-                [ text "Whoops, something went wrong..."
-                , text "Try visiting the official Hangar 18 website:"
+                [ Element.text "Whoops, something went wrong..."
+                , Element.text "Try visiting the official Hangar 18 website:"
                 , link []
                     { url = "https://www.climbhangar18.com"
-                    , label = text "Hangar 18 official website"
+                    , label = Element.text "Hangar 18 official website"
                     }
                 ]
         ]
@@ -217,7 +216,7 @@ viewLoading =
             , spacing 7
             ]
           <|
-            text "Scraping https://www.climbhangar18.com, please wait..."
+            Element.text "Scraping https://www.climbhangar18.com, please wait..."
         ]
     }
 
@@ -244,6 +243,7 @@ viewLoaded gymInfoDict =
     }
 
 
+borderWidth : { bottom : Int, left : Int, right : Int, top : Int }
 borderWidth =
     { bottom = 0
     , left = 0
@@ -254,20 +254,19 @@ borderWidth =
 
 viewGymInfoDict : Dict String GymInfo -> Element msg
 viewGymInfoDict gymInfoDict =
-    column [ width fill, height fill ]
-        ([ row
-            [ width fill
-            , height fill
+    column [ Element.width Element.fill, height Element.fill ]
+        (Element.row
+            [ Element.width Element.fill
+            , height Element.fill
             , Background.color blue
             , Border.color white
             , Border.widthEach { borderWidth | bottom = 2 }
             ]
-            [ el [ width fill ] <| text "Gym"
-            , el [ width fill ] <| text "Occupancy"
-            , el [ width fill ] <| text "Capacity"
+            [ el [ Element.width Element.fill ] <| Element.text "Gym"
+            , el [ Element.width Element.fill ] <| Element.text "Occupancy"
+            , el [ Element.width Element.fill ] <| Element.text "Capacity"
             ]
-         ]
-            ++ List.map viewGymInfoEntry (Dict.toList gymInfoDict)
+            :: List.map viewGymInfoEntry (Dict.toList gymInfoDict)
         )
 
 
@@ -275,36 +274,36 @@ viewGymInfoEntry : ( String, GymInfo ) -> Element msg
 viewGymInfoEntry ( name, info ) =
     case gradient <| toFloat info.occupancy / toFloat info.capacity of
         Nothing ->
-            row
-                [ width fill
-                , height fill
+            Element.row
+                [ Element.width Element.fill
+                , height Element.fill
                 , Border.color white
                 , Border.widthEach { borderWidth | bottom = 2 }
                 ]
-                [ el [ width fill ] <| text name
-                , el [ width fill ] <| text <| String.fromInt info.occupancy
-                , el [ width fill ] <| text <| String.fromInt info.capacity
+                [ el [ Element.width Element.fill ] <| Element.text name
+                , el [ Element.width Element.fill ] <| Element.text <| String.fromInt info.occupancy
+                , el [ Element.width Element.fill ] <| Element.text <| String.fromInt info.capacity
                 ]
 
         Just gradientColor ->
-            row
-                [ width fill
-                , height fill
+            Element.row
+                [ Element.width Element.fill
+                , height Element.fill
                 , Border.color white
                 , Border.widthEach { borderWidth | bottom = 2 }
                 ]
-                [ el [ width fill ] <| text name
+                [ el [ Element.width Element.fill ] <| Element.text name
                 , el
-                    [ height fill
-                    , width fill
+                    [ height Element.fill
+                    , Element.width Element.fill
                     , Background.color gradientColor
                     , Font.glow black 1
                     ]
                   <|
-                    el [ width fill, centerY ] <|
-                        text <|
+                    el [ Element.width Element.fill, Element.centerY ] <|
+                        Element.text <|
                             String.fromInt info.occupancy
-                , el [ width fill ] <| text <| String.fromInt info.capacity
+                , el [ Element.width Element.fill ] <| Element.text <| String.fromInt info.capacity
                 ]
 
 
@@ -351,19 +350,6 @@ singleQuotedString =
         |. Parser.token "'"
         |= (Parser.getChompedString <| Parser.chompUntil "'")
         |. Parser.token "'"
-
-
-parseGymInfoDict : Parser (Dict String GymInfo)
-parseGymInfoDict =
-    Parser.sequence
-        { start = "{"
-        , separator = ","
-        , end = "}"
-        , spaces = Parser.spaces
-        , item = parseGymInfoEntry
-        , trailing = Parser.Optional
-        }
-        |> Parser.map Dict.fromList
 
 
 parseDictKey : Parser String
